@@ -10,6 +10,8 @@
     "clean": "docker-compose down -v --remove-orphans",
     "logs": "docker-compose logs -f",
     "seed": "node scripts/seed.js",
+    "verify": "node scripts/verify.js",
+    "test-api": "node scripts/test-api.js",
     "test": "npm run test --workspaces",
     "lint": "npm run lint --workspaces",
     "build": "npm run build --workspaces"

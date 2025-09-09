@@ -1,0 +1,3 @@
+[submodule "eventsphere-user-service"]
+	path = eventsphere-user-service
+	url = https://github.com/bakibillahrahat/eventsphere-user-service.git

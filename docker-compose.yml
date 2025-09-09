@@ -1,0 +1,149 @@
+version: '3.8'
+
+services:
+  # User Service
+  user-service:
+    build: ./services/user-service
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=mongodb://mongo:27017/eventsphere_users
+      - JWT_SECRET=your-secret-key
+      - PORT=3000
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - eventsphere-network
+
+  # Event Service
+  event-service:
+    build: ./services/event-service
+    ports:
+      - "3002:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=mongodb://mongo:27017/eventsphere_events
+      - PORT=3000
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - eventsphere-network
+
+  # Booking Service
+  booking-service:
+    build: ./services/booking-service
+    ports:
+      - "3003:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=mongodb://mongo:27017/eventsphere_bookings
+      - USER_SERVICE_URL=http://user-service:3000
+      - EVENT_SERVICE_URL=http://event-service:3000
+      - PORT=3000
+    depends_on:
+      - mongo
+      - redis
+      - user-service
+      - event-service
+    networks:
+      - eventsphere-network
+
+  # Notification Service
+  notification-service:
+    build: ./services/notification-service
+    ports:
+      - "3004:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=mongodb://mongo:27017/eventsphere_notifications
+      - REDIS_URL=redis://redis:6379
+      - EMAIL_SERVICE_API_KEY=your-email-api-key
+      - PORT=3000
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - eventsphere-network
+
+  # Payment Service
+  payment-service:
+    build: ./services/payment-service
+    ports:
+      - "3005:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=mongodb://mongo:27017/eventsphere_payments
+      - STRIPE_SECRET_KEY=your-stripe-secret-key
+      - PORT=3000
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - eventsphere-network
+
+  # Analytics Service
+  analytics-service:
+    build: ./services/analytics-service
+    ports:
+      - "3006:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=mongodb://mongo:27017/eventsphere_analytics
+      - PORT=3000
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - eventsphere-network
+
+  # API Gateway
+  api-gateway:
+    build: ./services/api-gateway
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - USER_SERVICE_URL=http://user-service:3000
+      - EVENT_SERVICE_URL=http://event-service:3000
+      - BOOKING_SERVICE_URL=http://booking-service:3000
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3000
+      - PAYMENT_SERVICE_URL=http://payment-service:3000
+      - ANALYTICS_SERVICE_URL=http://analytics-service:3000
+      - PORT=3000
+    depends_on:
+      - user-service
+      - event-service
+      - booking-service
+      - notification-service
+      - payment-service
+      - analytics-service
+    networks:
+      - eventsphere-network
+
+  # Database
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - eventsphere-network
+
+  # Redis for caching and session management
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    networks:
+      - eventsphere-network
+
+volumes:
+  mongo-data:
+
+networks:
+  eventsphere-network:
+    driver: bridge

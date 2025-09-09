@@ -1,0 +1,39 @@
+{
+  "name": "event-sphere",
+  "version": "1.0.0",
+  "description": "A complete event management platform built on microservices architecture",
+  "main": "index.js",
+  "scripts": {
+    "dev": "docker-compose up --build",
+    "start": "docker-compose up",
+    "stop": "docker-compose down",
+    "clean": "docker-compose down -v --remove-orphans",
+    "logs": "docker-compose logs -f",
+    "seed": "node scripts/seed.js",
+    "verify": "node scripts/verify.js",
+    "test-api": "node scripts/test-api.js",
+    "test": "npm run test --workspaces",
+    "lint": "npm run lint --workspaces",
+    "build": "npm run build --workspaces"
+  },
+  "keywords": [
+    "event-management",
+    "microservices",
+    "nodejs",
+    "mongodb",
+    "docker",
+    "api",
+    "event-booking",
+    "notifications",
+    "payments"
+  ],
+  "author": "MD. Bakibillah Rahat",
+  "license": "MIT",
+  "workspaces": [
+    "services/*"
+  ],
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "nodemon": "^3.0.2"
+  }
+}
